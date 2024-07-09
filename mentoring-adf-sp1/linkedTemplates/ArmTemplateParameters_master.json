@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "mentoring-adf-sp1"
+		},
+		"LS_ASQL_Movies_connectionString": {
+			"value": ""
+		},
+		"LS_ABLB_EA_properties_typeProperties_sasUri_secretName": {
+			"value": "Blob-Storage-East-Australia"
+		},
+		"LS_ABLB_Online_properties_typeProperties_sasUri_secretName": {
+			"value": "Storage-blob"
+		},
+		"LS_ABLB_Storage_properties_typeProperties_sasUri_secretName": {
+			"value": "Storage-blob"
+		},
+		"LS_ADLS_Storage_properties_typeProperties_url": {
+			"value": "https://azurementoringdatalakesp.dfs.core.windows.net"
+		},
+		"LS_ASQL_DataMart_properties_typeProperties_connectionString_secretName": {
+			"value": "AzureSQLServerDataMartDB"
+		},
+		"LS_Key_Vault_properties_typeProperties_baseUrl": {
+			"value": "https://mentoring-key-vault-sp1.vault.azure.net/"
+		},
+		"LS_SQL_Local_properties_typeProperties_connectionString_secretName": {
+			"value": "SQLServerConnectionString"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

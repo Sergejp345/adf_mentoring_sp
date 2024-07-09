@@ -1,0 +1,158 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "mentoring-adf-sp1"
+		},
+		"LS_ASQL_Movies_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_Movies'"
+		},
+		"LS_ABLB_EA_properties_typeProperties_sasUri_secretName": {
+			"type": "string",
+			"defaultValue": "Blob-Storage-East-Australia"
+		},
+		"LS_ABLB_Online_properties_typeProperties_sasUri_secretName": {
+			"type": "string",
+			"defaultValue": "Storage-blob"
+		},
+		"LS_ABLB_Storage_properties_typeProperties_sasUri_secretName": {
+			"type": "string",
+			"defaultValue": "Storage-blob"
+		},
+		"LS_ADLS_Storage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://azurementoringdatalakesp.dfs.core.windows.net"
+		},
+		"LS_ASQL_DataMart_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "AzureSQLServerDataMartDB"
+		},
+		"LS_Key_Vault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://mentoring-key-vault-sp1.vault.azure.net/"
+		},
+		"LS_SQL_Local_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "SQLServerConnectionString"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "mentoring-adf-sp1_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LS_ASQL_Movies_connectionString": {
+						"value": "[parameters('LS_ASQL_Movies_connectionString')]"
+					},
+					"LS_ADLS_Storage_properties_typeProperties_url": {
+						"value": "[parameters('LS_ADLS_Storage_properties_typeProperties_url')]"
+					},
+					"LS_Key_Vault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('LS_Key_Vault_properties_typeProperties_baseUrl')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "mentoring-adf-sp1_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LS_ABLB_EA_properties_typeProperties_sasUri_secretName": {
+						"value": "[parameters('LS_ABLB_EA_properties_typeProperties_sasUri_secretName')]"
+					},
+					"LS_ABLB_Online_properties_typeProperties_sasUri_secretName": {
+						"value": "[parameters('LS_ABLB_Online_properties_typeProperties_sasUri_secretName')]"
+					},
+					"LS_ABLB_Storage_properties_typeProperties_sasUri_secretName": {
+						"value": "[parameters('LS_ABLB_Storage_properties_typeProperties_sasUri_secretName')]"
+					},
+					"LS_ASQL_DataMart_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('LS_ASQL_DataMart_properties_typeProperties_connectionString_secretName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'mentoring-adf-sp1_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "mentoring-adf-sp1_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LS_SQL_Local_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('LS_SQL_Local_properties_typeProperties_connectionString_secretName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'mentoring-adf-sp1_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "mentoring-adf-sp1_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'mentoring-adf-sp1_ArmTemplate_2')]"
+			]
+		}
+	]
+}

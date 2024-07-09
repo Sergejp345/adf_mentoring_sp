@@ -1,0 +1,6 @@
+{
+	"LogicAppURL": {
+		"type": "string",
+		"value": "http"
+	}
+}
