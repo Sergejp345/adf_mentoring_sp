@@ -1,0 +1,25 @@
+{
+	"name": "TR_Daily",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PL_DATA_DS_SQL_Ticket_To_DS_ASQL_CinemaTickets",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 5,
+				"startTime": "2024-06-05T11:40:00",
+				"endTime": "2024-06-05T12:00:00",
+				"timeZone": "Belarus Standard Time"
+			}
+		}
+	}
+}

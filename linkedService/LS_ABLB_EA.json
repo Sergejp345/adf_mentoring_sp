@@ -1,0 +1,19 @@
+{
+	"name": "LS_ABLB_EA",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "Link service to the blob storage in East Australia",
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"sasUri": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LS_Key_Vault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "Blob-Storage-East-Australia"
+			}
+		}
+	}
+}

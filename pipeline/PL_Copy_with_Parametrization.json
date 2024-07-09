@@ -1,0 +1,384 @@
+{
+	"name": "PL_Copy_with_Parametrization",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get List of Sources",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT * FROM etl.tControlMetadata\nWHERE Copy_Enabled = 1\nORDER BY Source_Id",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_ASQL_Metadata_Config",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get List of Sources",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get List of Sources').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "LoadTable",
+							"description": "Take a full snapshot on this object and copy it to the destination",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"additionalColumns": [
+										{
+											"name": "pipeline_id",
+											"value": {
+												"value": "@pipeline().RunId",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "file_name",
+											"value": "$$FILENAME"
+										}
+									],
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"preCopyScript": {
+										"value": "@json(item().Sink_Setting).preCopyScript",
+										"type": "Expression"
+									},
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false
+								},
+								"enableStaging": false,
+								"validateDataConsistency": false,
+								"logSettings": {
+									"enableCopyActivityLog": true,
+									"copyActivityLogSettings": {
+										"logLevel": "Info",
+										"enableReliableLogging": false
+									},
+									"logLocationSettings": {
+										"linkedServiceName": {
+											"referenceName": "LS_ADLS_Storage",
+											"type": "LinkedServiceReference"
+										}
+									}
+								},
+								"translator": {
+									"value": "@json(item().Mapping_Setting).translator",
+									"type": "Expression"
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_ADSL_MetadataSource",
+									"type": "DatasetReference",
+									"parameters": {
+										"source_column_delimeter": {
+											"value": "@item().source_column_delimeter",
+											"type": "Expression"
+										},
+										"source_escape_character": {
+											"value": "@item().source_escape_character",
+											"type": "Expression"
+										},
+										"source_quote_character": {
+											"value": "@item().source_quote_character",
+											"type": "Expression"
+										},
+										"source_file_name": {
+											"value": "@item().source_file_name",
+											"type": "Expression"
+										},
+										"source_folder": {
+											"value": "@item().source_folder",
+											"type": "Expression"
+										},
+										"source_container": {
+											"value": "@item().source_container",
+											"type": "Expression"
+										},
+										"source_first_row_as_header": "True"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_ASQL_MetadataDestination",
+									"type": "DatasetReference",
+									"parameters": {
+										"destination_table_name": {
+											"value": "@item().destination_table_name",
+											"type": "Expression"
+										},
+										"destination_schema_name": {
+											"value": "@item().destination_schema_name",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Write_Logs",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "LoadTable",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[etl].[log_pipeline_run]",
+								"storedProcedureParameters": {
+									"ActivityName": {
+										"value": "LoadTable",
+										"type": "String"
+									},
+									"BillingDuration": {
+										"value": {
+											"value": "@float(activity('LoadTable').output.billingReference.billableDuration[0].duration)",
+											"type": "Expression"
+										},
+										"type": "Double"
+									},
+									"CopyDuration": {
+										"value": {
+											"value": "@activity('LoadTable').output.copyDuration",
+											"type": "Expression"
+										},
+										"type": "Double"
+									},
+									"EndTime": {
+										"value": {
+											"value": "@utcnow()",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"MeterType": {
+										"value": {
+											"value": "@activity('LoadTable').output.billingReference.billableDuration[0].meterType",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"ParallelCopies": {
+										"value": {
+											"value": "@activity('LoadTable').output.usedParallelCopies",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"PipelineName": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"ProcessedFiles": {
+										"value": {
+											"value": "@activity('LoadTable').output.filesRead",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"QueueDuration": {
+										"value": {
+											"value": "@activity('LoadTable').output.durationInQueue.integrationRuntimeQueue",
+											"type": "Expression"
+										},
+										"type": "Decimal"
+									},
+									"RowsRead": {
+										"value": {
+											"value": "@activity('LoadTable').output.rowsRead",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"RowsWritten": {
+										"value": {
+											"value": "@activity('LoadTable').output.rowsCopied",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"RunId": {
+										"value": {
+											"value": "@pipeline().RunId",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"StartTime": {
+										"value": {
+											"value": "@activity('LoadTable').output.executionDetails[0].start",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"Status": {
+										"value": {
+											"value": "@activity('LoadTable').output.executionDetails[0].status",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"TransferDuration": {
+										"value": {
+											"value": "@activity('LoadTable').output.executionDetails[0].profile.transfer.duration",
+											"type": "Expression"
+										},
+										"type": "Decimal"
+									},
+									"UsedDIUs": {
+										"value": {
+											"value": "@activity('LoadTable').output.usedDataIntegrationUnits",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_ASQL_Movies",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Write_Error_Logs",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "LoadTable",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[etl].[Error_log_pipeline_run]",
+								"storedProcedureParameters": {
+									"ActivityName": {
+										"value": "LoadTable",
+										"type": "String"
+									},
+									"ErrorCode": {
+										"value": {
+											"value": "@activity('LoadTable').output.errors[0].Code",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"ErrorMessage": {
+										"value": {
+											"value": "@activity('LoadTable').output.errors[0].Message",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"FailureType": {
+										"value": {
+											"value": "@concat(activity('LoadTable').error.message,'failureType:',activity('LoadTable').error.failureType)",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"PipelineName": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"RunId": {
+										"value": {
+											"value": "@pipeline().RunId",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_ASQL_Movies",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"ww": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-07-01T19:08:16Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
