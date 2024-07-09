@@ -1,0 +1,94 @@
+{
+	"name": "Fail",
+	"properties": {
+		"activities": [
+			{
+				"name": "Fail Activity",
+				"type": "Fail",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Something goes wrong",
+					"errorCode": "2000"
+				}
+			},
+			{
+				"name": "Get LogicApp URL from KeyVault",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Fail Activity",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"url": "https://mentoring-key-vault-sp1.vault.azure.net/secrets/LogicApp/18e1cfe8053e4c6287f2b8529782dcb6?api-version=7.0",
+					"body": {
+						"value": "{\"message\":\"This is a custom dynamic message from your pipeline with run ID @{pipeline().RunId}.\",\"dataFactoryName\":\"@{pipeline().DataFactory}\",\"pipelineName\":\"@{pipeline().Pipeline}\",\"receiver\":\"@{pipeline().parameters.receiver}\"}",
+						"type": "Expression"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "Request to LogicApp",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Get LogicApp URL from KeyVault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": {
+						"value": "@activity('Get LogicApp URL from KeyVault').output.value",
+						"type": "Expression"
+					},
+					"body": {
+						"message": "This is a custom dynamic message from your pipeline with run ID @{pipeline().RunId}.",
+						"dataFactoryName": "@{pipeline().DataFactory}",
+						"pipelineName": "@{pipeline().Pipeline}",
+						"receiver": "@{pipeline().parameters.receiver}"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"receiver": {
+				"type": "string",
+				"defaultValue": "sergei_palkin@epam.com"
+			}
+		},
+		"folder": {
+			"name": "Module 10"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-07-05T12:01:59Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

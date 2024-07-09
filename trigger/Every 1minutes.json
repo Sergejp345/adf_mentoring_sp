@@ -1,0 +1,25 @@
+{
+	"name": "Every 1minutes",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Fail",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 1,
+				"startTime": "2024-07-03T17:33:00",
+				"endTime": "2024-07-03T17:37:00",
+				"timeZone": "Belarus Standard Time"
+			}
+		}
+	}
+}

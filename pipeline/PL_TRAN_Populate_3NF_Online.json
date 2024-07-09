@@ -1,0 +1,57 @@
+{
+	"name": "PL_TRAN_Populate_3NF_Online",
+	"properties": {
+		"activities": [
+			{
+				"name": "ACT_GEN_SPRC_Populate_Online_Service",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateOnlineService]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_Movies",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "ACT_GEN_SPRC_Populate_Online_Purchase",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "ACT_GEN_SPRC_Populate_Online_Service",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateOnlinePurchase]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_Movies",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-06-14T13:54:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,28 @@
+{
+	"name": "DS_ADSL_Binary_Online_File",
+	"properties": {
+		"description": "It describes the file in the data source store.",
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().filename",
+					"type": "Expression"
+				},
+				"fileSystem": "online"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

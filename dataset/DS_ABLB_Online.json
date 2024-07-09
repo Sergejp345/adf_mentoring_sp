@@ -1,0 +1,19 @@
+{
+	"name": "DS_ABLB_Online",
+	"properties": {
+		"description": "It describes the folder in the data source store.",
+		"linkedServiceName": {
+			"referenceName": "LS_ABLB_Online",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "online"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

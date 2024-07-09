@@ -1,0 +1,34 @@
+{
+	"name": "DS_ASQL_MetadataDestination",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_Movies",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"destination_table_name": {
+				"type": "String"
+			},
+			"destination_schema_name": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Metadata_Sources"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().destination_schema_name",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().destination_table_name",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

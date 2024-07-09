@@ -1,0 +1,95 @@
+{
+	"name": "Master_Modul_5",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy to Datalake",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Copy_Files_to_Datalake",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Load to staging",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Copy to Datalake",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Copy_To_Staging_Module_5_New",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Load 3NF",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Load to staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "L﻿oad_to_3NF_schema",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Move to archive",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Load 3NF",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Move_Files_to_Archive",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-06-07T11:15:38Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

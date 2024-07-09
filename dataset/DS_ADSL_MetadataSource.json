@@ -1,0 +1,72 @@
+{
+	"name": "DS_ADSL_MetadataSource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"source_column_delimeter": {
+				"type": "String"
+			},
+			"source_escape_character": {
+				"type": "String"
+			},
+			"source_quote_character": {
+				"type": "String"
+			},
+			"source_file_name": {
+				"type": "String"
+			},
+			"source_folder": {
+				"type": "String"
+			},
+			"source_container": {
+				"type": "String"
+			},
+			"source_first_row_as_header": {
+				"type": "bool"
+			}
+		},
+		"folder": {
+			"name": "Metadata_Sources"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().source_file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().source_folder",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().source_container",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": {
+				"value": "@dataset().source_column_delimeter",
+				"type": "Expression"
+			},
+			"escapeChar": {
+				"value": "@dataset().source_escape_character",
+				"type": "Expression"
+			},
+			"firstRowAsHeader": {
+				"value": "@dataset().source_first_row_as_header",
+				"type": "Expression"
+			},
+			"quoteChar": {
+				"value": "@dataset().source_quote_character",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

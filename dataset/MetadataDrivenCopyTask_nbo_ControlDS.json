@@ -1,0 +1,20 @@
+{
+	"name": "MetadataDrivenCopyTask_nbo_ControlDS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_Movies",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "MetadataDrivenCopyTask_nbo_20240626"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "etl",
+			"table": "MainControlTable_nbo"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
