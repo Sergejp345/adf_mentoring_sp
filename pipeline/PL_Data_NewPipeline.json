@@ -1,0 +1,17 @@
+{
+	"name": "PL_Data_NewPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "ACT_Wait",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 10
+				}
+			}
+		],
+		"annotations": []
+	}
+}
